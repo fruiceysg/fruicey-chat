@@ -80,14 +80,25 @@ var msgs = document.getElementById('fq-msgs');
 var inp = document.getElementById('fq-input');
 var badge = document.getElementById('fq-badge');
 
+function notifyParent(open) {
+  window.parent.postMessage(open ? 'fq-open' : 'fq-close', '*');
+}
+
 fab.onclick = function() {
   isOpen = !isOpen;
   win.classList.toggle('open', isOpen);
   badge.style.display = 'none';
+  notifyParent(isOpen);
   if (isOpen && !hasOpened) { hasOpened = true; setTimeout(opening, 300); }
   if (isOpen) setTimeout(function(){ inp.focus(); }, 350);
 };
-document.getElementById('fq-close').onclick = function(){ isOpen = false; win.classList.remove('open'); };
+
+document.getElementById('fq-close').onclick = function(){
+  isOpen = false;
+  win.classList.remove('open');
+  notifyParent(false);
+};
+
 document.getElementById('fq-send').onclick = send;
 inp.onkeydown = function(e){ if(e.key==='Enter') send(); };
 setTimeout(function(){ if(!isOpen) badge.style.display='flex'; }, 8000);
