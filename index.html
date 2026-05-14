@@ -69,7 +69,7 @@ body { background: transparent; overflow: hidden; }
 </div>
 <script>
 var WORKER_URL = 'https://fruicey-chat.vercel.app/chat';
-var WA_NUMBER = '3QXVORY754LBM1';
+var WA_NUMBER = '6585098095';
 var chatHistory = [], isOpen = false, isTyping = false, hasOpened = false;
 var fab = document.getElementById('fq-fab');
 var win = document.getElementById('fq-window');
@@ -139,7 +139,7 @@ function ask() {
   })
   .catch(function() {
     tp.remove(); isTyping = false;
-    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/message/' + WA_NUMBER + '" target="_blank">tap here</a>');
+    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_blank">tap here</a>');
   });
 }
 
