@@ -16,7 +16,7 @@ SMOOTHIES ($5.60-$7.20):
 - Coco Chacha $5.60 → https://www.fruicey.sg/products/Coco-Chacha-p547760252
 - Follow that Rainbow $6 → https://www.fruicey.sg/products/Follow-that-Rainbow-p547760253
 - Cojito $5.60 → https://www.fruicey.sg/products/Cojito-p547719762
-- Pina Cocolada $5.60 TOP SELLER → https://www.fruicey.sg/products/Pina-Cocolada-p547760257
+- Pina Cocolada $5.60 TOP SELLER → https://www.fruicey.sg/products/Pina-Cocolada-p547760257 
 - Fruicey Sling $5.60 TOP SELLER → https://www.fruicey.sg/products/Fruicey-Sling-p547722762
 - Kampung Spirit $5.60 → https://www.fruicey.sg/products/Kampung-Spirit-p547719764
 - Berry Shiok $6 TOP SELLER → https://www.fruicey.sg/products/Berry-Shiok-p547719756
