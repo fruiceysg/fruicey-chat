@@ -139,7 +139,7 @@ function ask() {
   })
   .catch(function() {
     tp.remove(); isTyping = false;
-    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_blank">tap here</a>');
+    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_top">tap here</a>');
   });
 }
 
@@ -165,7 +165,7 @@ function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 function fmt(t) {
   return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
           .replace(/\*(.*?)\*/g,'<em>$1</em>')
-          .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank">$1</a>')
+          .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_top">$1</a>')
           .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 </script>
