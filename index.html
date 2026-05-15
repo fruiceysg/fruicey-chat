@@ -122,13 +122,31 @@ function send() {
   ask();
 }
 
-function ask() {
+function ask(retry) {
   isTyping = true;
   var tp = typing();
   fetch(WORKER_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({messages: chatHistory})
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    tp.remove(); isTyping = false;
+    var reply = (d.content && d.content[0] && d.content[0].text) || "Oops! Try again or WhatsApp us.";
+    chatHistory.push({role:'assistant', content:reply});
+    bubble('bot', fmt(reply));
+  })
+  .catch(function() {
+    if (!retry) {
+      tp.remove();
+      ask(true); // silent retry once
+    } else {
+      tp.remove(); isTyping = false;
+      bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_top">tap here</a>');
+    }
+  });
+}
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
