@@ -26,7 +26,7 @@ body { background: transparent; overflow: hidden; }
 .fq-bubble{max-width:85%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.6;word-break:break-word;}
 .fq-bubble.bot{background:#fff;color:#222;border-top-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);align-self:flex-start;}
 .fq-bubble.user{background:#4a7c59;color:#fff;border-top-right-radius:4px;align-self:flex-end;}
-.fq-bubble a{color:#2d6b45;}
+.fq-bubble a{color:#2d6b45;font-weight:600;}
 .fq-typing{display:flex;gap:5px;padding:10px 13px;align-self:flex-start;background:#fff;border-radius:14px;border-top-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
 .fq-dot{width:7px;height:7px;border-radius:50%;background:#ccc;animation:fqDot 1.3s infinite;}
 .fq-dot:nth-child(2){animation-delay:.18s;}
@@ -38,6 +38,10 @@ body { background: transparent; overflow: hidden; }
 #fq-send{width:38px;height:38px;border-radius:50%;background:#4a7c59;border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 #fq-send svg{width:16px;height:16px;fill:#fff;}
 #fq-powered{text-align:center;font-size:10px;color:#bbb;padding:0 0 6px;background:#fff;flex-shrink:0;}
+@media(max-width:480px){
+  #fq-window{width:calc(100vw - 20px);right:10px;bottom:84px;max-height:70vh;}
+  #fq-fab{bottom:14px;right:14px;}
+}
 </style>
 </head>
 <body>
@@ -47,7 +51,7 @@ body { background: transparent; overflow: hidden; }
 </button>
 <div id="fq-window">
   <div id="fq-head">
-    <div id="fq-head-avatar"><img src="https://i.ibb.co/KxVtpxDy/Wilson-s-Digital-Twin.png" alt="Wilson s Digital Twin" border="0"></div>
+    <div id="fq-head-avatar"><img src="https://i.ibb.co/KxVtpxDy/Wilson-s-Digital-Twin.png" alt="Willy"/></div>
     <div id="fq-head-info">
       <div id="fq-head-name">Wilson @ Fruicey</div>
       <div id="fq-head-sub">Your personal juice guide ✨</div>
@@ -164,12 +168,16 @@ function typing() {
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function fmt(t) {
-  return t
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_top" style="color:#2d6b45;font-weight:600;">$1</a>')
-    .replace(/(?<!\()https?:\/\/[^\s<)]+/g,'<a href="$&" target="_top">$&</a>')
-    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  // First handle markdown links [text](url)
+  t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_top">$1</a>');
+  // Then bold and italic
+  t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Then bare URLs that are not already in an href
+  t = t.replace(/(?<!href=")(?<!">)(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_top">$1</a>');
+  // Line breaks
+  t = t.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+  return t;
 }
 </script>
 </body>
