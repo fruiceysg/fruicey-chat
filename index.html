@@ -122,7 +122,7 @@ function send() {
   ask();
 }
 
-function ask(retry) {
+function ask() {
   isTyping = true;
   var tp = typing();
   fetch(WORKER_URL, {
@@ -138,13 +138,8 @@ function ask(retry) {
     bubble('bot', fmt(reply));
   })
   .catch(function() {
-    if (!retry) {
-      tp.remove();
-      ask(true);
-    } else {
-      tp.remove(); isTyping = false;
-      bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_top">tap here</a>');
-    }
+    tp.remove(); isTyping = false;
+    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_top">tap here</a>');
   });
 }
 
@@ -173,7 +168,7 @@ function fmt(t) {
     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.*?)\*/g,'<em>$1</em>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_top" style="color:#2d6b45;font-weight:600;">$1</a>')
-    .replace(/https?:\/\/[^\s<)]+/g,'<a href="$&" target="_top">$&</a>')
+    .replace(/(?<!\()https?:\/\/[^\s<)]+/g,'<a href="$&" target="_top">$&</a>')
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 </script>
