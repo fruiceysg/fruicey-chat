@@ -163,10 +163,13 @@ function typing() {
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmt(t) {
-  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-          .replace(/\*(.*?)\*/g,'<em>$1</em>')
-          .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_top">$1</a>')
-          .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  return t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,'<a href="$2" target="_top" style="color:#2d6b45;font-weight:600;">$1</a>')
+    .replace(/((?<!\()(https?:\/\/[^\s<]+))/g,'<a href="$1" target="_top">$1</a>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
 }
 </script>
 </body>
