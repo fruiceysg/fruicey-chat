@@ -53,7 +53,7 @@ ACAI BOWLS ($7.20-$14.40):
 FRESH PRESSES: Immunity, Beauty & Wellness, Nutritional, Longevity. Subscriptions from $28.80-$42.80/3 days.
 Browse all Fresh Presses → https://www.fruicey.sg/products/Fresh-Presses-c161349003
 
-STORE: 68 Jalan Jurong Kechil #01-10 S596180. Beauty World MRT DT5 Exit C. Mon-Sat 10:30am-8:30pm, Sun 10:30am-3:30pm. Free delivery above $30. Payment: Visa, Mastercard, PayNow, PayLah, GrabPay, ShopeePay, Alipay.
+STORE: 68 Jalan Jurong Kechil #01-10 S596180. Beauty World MRT DT5 Exit C. Mon-Sat 10:30am-8:30pm, closed on Sunday. Free delivery above $30. Payment: Visa, Mastercard, PayNow, PayLah, GrabPay, ShopeePay, Alipay.
 For orders: Chat with Wilson on WhatsApp → https://wa.me/6585098095`;
 
 app.get('/', (req, res) => {
