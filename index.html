@@ -67,12 +67,7 @@ body { background: transparent; overflow: hidden; }
     <button id="fq-close">✕</button>
   </div>
   <div id="fq-msgs"></div>
-  <div id="fq-chips">
-    <button class="fq-chip" onclick="fqChip('What do you recommend?')">💡 Surprise me</button>
-    <button class="fq-chip" onclick="fqChip('Show me your smoothies')">🥤 Shakes & Smoothies</button>
-    <button class="fq-chip" onclick="fqChip('Tell me about acai bowls')">🥣 Superfood bowls</button>
-    <button class="fq-chip" onclick="fqChip('What are your opening hours?')">🕐 Business hours</button>
-  </div>
+  <div id="fq-chips"></div>
   <div id="fq-input-row">
     <input id="fq-input" type="text" placeholder="Ask Wilson anything..." autocomplete="off"/>
     <button id="fq-send"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
@@ -80,7 +75,7 @@ body { background: transparent; overflow: hidden; }
   <div id="fq-powered">Powered by AI · Fruicey 福星果</div>
 </div>
 <script>
-console.log('%c✅ Fruicey chat widget: mobile full-screen (rev 1)','color:#4a7c59;font-weight:bold');
+console.log('%c✅ Fruicey chat widget: multilingual (rev 2)','color:#4a7c59;font-weight:bold');
 var WORKER_URL = 'https://fruicey-chat.vercel.app/chat';
 var WA_NUMBER = '6585098095';
 var chatHistory = [], isOpen = false, isTyping = false, hasOpened = false;
@@ -89,6 +84,56 @@ var win = document.getElementById('fq-window');
 var msgs = document.getElementById('fq-msgs');
 var inp = document.getElementById('fq-input');
 var badge = document.getElementById('fq-badge');
+
+/* ── Language ─────────────────────────────────────────────────────────
+   LANG is driven by the parent app (postMessage {type:'fq-lang'} or ?lang=
+   in the URL). English is the default. The AI is told to reply in the
+   chosen language on every request; the UI chrome is translated below. */
+var LANG = 'en';
+var LANGNAME = { en:'English', zh:'Chinese (Simplified, 简体中文)', ja:'Japanese (日本語)' };
+var T = {
+  en:{ sub:'Your personal juice guide ✨', ph:'Ask Wilson anything...', powered:'Powered by AI · Fruicey 福星果',
+       opening:"Hey there, Wilson here at Fruicey, well — the digital me anyway 😄<br><br>What are you in the mood for today?",
+       oops:"Oops! Try again or WhatsApp us.",
+       snag:'Hit a snag! Chat Wilson on WhatsApp → <a href="https://wa.me/'+WA_NUMBER+'" target="_top">tap here</a>' },
+  zh:{ sub:'您的专属果汁向导 ✨', ph:'向 Wilson 提问...', powered:'由 AI 驱动 · Fruicey 福星果',
+       opening:"你好，我是 Fruicey 的 Wilson，嗯——数字版的我啦 😄<br><br>今天想喝点什么？",
+       oops:"哎呀！请重试，或在 WhatsApp 上联系我们。",
+       snag:'出了点小问题！在 WhatsApp 上联系 Wilson → <a href="https://wa.me/'+WA_NUMBER+'" target="_top">点这里</a>' },
+  ja:{ sub:'あなた専用のジュースガイド ✨', ph:'Wilson に何でも聞いてね...', powered:'AI 搭載 · Fruicey 福星果',
+       opening:"こんにちは、Fruicey の Wilson です——デジタルの僕だけどね 😄<br><br>今日はどんな気分？",
+       oops:"おっと！もう一度試すか、WhatsApp でご連絡ください。",
+       snag:'問題が発生しました！WhatsApp で Wilson に連絡 → <a href="https://wa.me/'+WA_NUMBER+'" target="_top">こちら</a>' }
+};
+var CHIPS = [
+  { q:'What do you recommend?',      en:'💡 Surprise me',        zh:'💡 给我惊喜',       ja:'💡 おまかせ' },
+  { q:'Show me your smoothies',      en:'🥤 Shakes & Smoothies', zh:'🥤 奶昔与冰沙',     ja:'🥤 シェイク＆スムージー' },
+  { q:'Tell me about acai bowls',    en:'🥣 Superfood bowls',    zh:'🥣 超级食物碗',     ja:'🥣 スーパーフードボウル' },
+  { q:'What are your opening hours?',en:'🕐 Business hours',     zh:'🕐 营业时间',       ja:'🕐 営業時間' }
+];
+
+function renderChips(){
+  var box = document.getElementById('fq-chips');
+  box.innerHTML = CHIPS.map(function(c, i){
+    return '<button class="fq-chip" onclick="fqChip('+i+')">'+c[LANG]+'</button>';
+  }).join('');
+}
+function applyLang(lang){
+  if(!T[lang]) lang = 'en';
+  LANG = lang;
+  document.getElementById('fq-head-sub').textContent = T[LANG].sub;
+  inp.setAttribute('placeholder', T[LANG].ph);
+  document.getElementById('fq-powered').textContent = T[LANG].powered;
+  renderChips();
+}
+// Initial language from ?lang= in the iframe URL.
+try { var _pm = new URLSearchParams(location.search).get('lang'); if(_pm) LANG = _pm; } catch(e){}
+// Language updates pushed from the parent app.
+window.addEventListener('message', function(e){
+  var d = e.data;
+  if (d && typeof d === 'object' && d.type === 'fq-lang') applyLang(d.lang);
+});
+applyLang(LANG);
 
 function notifyParent(open) {
   try { window.parent.postMessage(open ? 'fq-open' : 'fq-close', '*'); } catch(e) {}
@@ -113,16 +158,17 @@ document.getElementById('fq-send').onclick = send;
 inp.onkeydown = function(e) { if (e.key === 'Enter') send(); };
 setTimeout(function() { if (!isOpen) badge.style.display = 'flex'; }, 8000);
 
-window.fqChip = function(t) {
+window.fqChip = function(i) {
+  var c = CHIPS[i]; if(!c) return;
   document.getElementById('fq-chips').style.display = 'none';
-  bubble('user', esc(t));
-  chatHistory.push({role:'user', content:t});
+  bubble('user', esc(c[LANG]));             // show the tapped label in the user's language
+  chatHistory.push({role:'user', content:c.q});  // send the clear canonical question to the AI
   ask();
 };
 
 function opening() {
-  bubble('bot', "Hey there, Wilson here at Fruicey, well \u2014 the digital me anyway \ud83d\ude04<br><br>What are you in the mood for today?");
-  chatHistory.push({role:'assistant', content:"Hey there, Wilson here at Fruicey, well — the digital me anyway 😄 What are you in the mood for today?"});
+  bubble('bot', T[LANG].opening);
+  chatHistory.push({role:'assistant', content:T[LANG].opening.replace(/<br\s*\/?>(?:\s*)/g,' ')});
 }
 
 function send() {
@@ -138,21 +184,31 @@ function send() {
 function ask() {
   isTyping = true;
   var tp = typing();
+  // Per-request copy so stored history stays clean; steer the AI to the chosen language.
+  var payload = chatHistory.map(function(m){ return {role:m.role, content:m.content}; });
+  if (LANG !== 'en') {
+    for (var i = payload.length - 1; i >= 0; i--) {
+      if (payload[i].role === 'user') {
+        payload[i].content += '\n\n(Please reply in ' + (LANGNAME[LANG] || 'English') + '. Keep your warm, friendly tone and translate any menu names naturally.)';
+        break;
+      }
+    }
+  }
   fetch(WORKER_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({messages: chatHistory})
+    body: JSON.stringify({messages: payload})
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
     tp.remove(); isTyping = false;
-    var reply = (d.content && d.content[0] && d.content[0].text) || "Oops! Try again or WhatsApp us.";
+    var reply = (d.content && d.content[0] && d.content[0].text) || T[LANG].oops;
     chatHistory.push({role:'assistant', content:reply});
     bubble('bot', fmt(reply));
   })
   .catch(function() {
     tp.remove(); isTyping = false;
-    bubble('bot', 'Hit a snag! Chat Wilson on WhatsApp \u2192 <a href="https://wa.me/' + WA_NUMBER + '" target="_top">tap here</a>');
+    bubble('bot', T[LANG].snag);
   });
 }
 
