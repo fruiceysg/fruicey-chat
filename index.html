@@ -79,6 +79,7 @@ console.log('%c✅ Fruicey chat widget: multilingual (rev 2)','color:#4a7c59;fon
 var WORKER_URL = 'https://fruicey-chat.vercel.app/chat';
 var WA_NUMBER = '6585098095';
 var chatHistory = [], isOpen = false, isTyping = false, hasOpened = false;
+var openingBubble = null, userSpoke = false;   // track the greeting so it can re-translate on language switch
 var fab = document.getElementById('fq-fab');
 var win = document.getElementById('fq-window');
 var msgs = document.getElementById('fq-msgs');
@@ -125,6 +126,11 @@ function applyLang(lang){
   inp.setAttribute('placeholder', T[LANG].ph);
   document.getElementById('fq-powered').textContent = T[LANG].powered;
   renderChips();
+  // Re-translate the greeting bubble if it's still the only message (user hasn't chatted yet).
+  if (openingBubble && !userSpoke) {
+    openingBubble.innerHTML = T[LANG].opening;
+    if (chatHistory.length) chatHistory[chatHistory.length-1] = {role:'assistant', content:T[LANG].opening.replace(/<br\s*\/?>(?:\s*)/g,' ')};
+  }
 }
 // Initial language from ?lang= in the iframe URL.
 try { var _pm = new URLSearchParams(location.search).get('lang'); if(_pm) LANG = _pm; } catch(e){}
@@ -160,6 +166,7 @@ setTimeout(function() { if (!isOpen) badge.style.display = 'flex'; }, 8000);
 
 window.fqChip = function(i) {
   var c = CHIPS[i]; if(!c) return;
+  userSpoke = true;
   document.getElementById('fq-chips').style.display = 'none';
   bubble('user', esc(c[LANG]));             // show the tapped label in the user's language
   chatHistory.push({role:'user', content:c.q});  // send the clear canonical question to the AI
@@ -167,13 +174,14 @@ window.fqChip = function(i) {
 };
 
 function opening() {
-  bubble('bot', T[LANG].opening);
+  openingBubble = bubble('bot', T[LANG].opening);
   chatHistory.push({role:'assistant', content:T[LANG].opening.replace(/<br\s*\/?>(?:\s*)/g,' ')});
 }
 
 function send() {
   var t = inp.value.trim();
   if (!t || isTyping) return;
+  userSpoke = true;
   inp.value = '';
   document.getElementById('fq-chips').style.display = 'none';
   bubble('user', esc(t));
